@@ -24,7 +24,7 @@ def index_view():
     if form.validate_on_submit():
         short_link = form.custom_id.data
         if URLMap.query.filter_by(short=short_link).first():
-            flash(f'Имя {short_link} уже занято!')
+            flash('Предложенный вариант короткой ссылки уже существует.')
             form.custom_id.data = None
             return render_template('index.html', form=form)
         if not short_link:

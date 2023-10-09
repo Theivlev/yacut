@@ -28,7 +28,7 @@ def add_short_link():
     if len(data['custom_id']) > 16:
         raise InvalidAPIUsage('Указано недопустимое имя для короткой ссылки', 400)
     elif URLMap.query.filter_by(short=data['custom_id']).first():
-        raise InvalidAPIUsage(f'Имя "{data["custom_id"]}" уже занято.')
+        raise InvalidAPIUsage('Предложенный вариант короткой ссылки уже существует.')
     elif not match(r'^[A-Za-z0-9_]+$', data['custom_id']):
         raise InvalidAPIUsage('Указано недопустимое имя для короткой ссылки')
     url_map = URLMap()
