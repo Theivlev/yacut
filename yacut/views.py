@@ -1,18 +1,17 @@
-
-
 import random
 import string
 
-from flask import abort, flash, redirect, render_template
+from flask import flash, redirect, render_template
 
 from . import app, db
 from .forms import URLMapForm
 from .models import URLMap
 
 
-def get_unique_short_id(length=6):
+def get_unique_short_id():
+    default_length = 6
     chars = string.ascii_lowercase + string.ascii_uppercase + string.digits
-    unique_id = ''.join(random.choice(chars) for i in range(length))
+    unique_id = ''.join(random.choice(chars) for i in range(default_length))
     if URLMap.query.filter_by(short=unique_id).first():
         get_unique_short_id()
     return unique_id
@@ -20,6 +19,7 @@ def get_unique_short_id(length=6):
 
 @app.route('/', methods=['GET', 'POST'])
 def index_view():
+    max_length_link = 16
     form = URLMapForm()
     if form.validate_on_submit():
         short_link = form.custom_id.data
@@ -29,7 +29,7 @@ def index_view():
             return render_template('index.html', form=form)
         if not short_link:
             form.custom_id.data = get_unique_short_id()
-        if len(form.custom_id.data) > 16:
+        if len(form.custom_id.data) > max_length_link:
             flash('Указано недопустимое имя для короткой ссылки')
             form.custom_id.data = None
             return render_template('index.html', form=form)
@@ -44,8 +44,7 @@ def index_view():
 
 @app.route('/<string:short>')
 def redirection_view(short):
-    url = URLMap.query.filter_by(short=short).first()
+    url = URLMap.query.filter_by(short=short).first_or_404()
     if url is not None:
         original_link = url.original
         return redirect(original_link)
-    abort(404)
