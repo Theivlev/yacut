@@ -25,4 +25,6 @@ def add_short_link():
     url_map.from_dict(data)
     db.session.add(url_map)
     db.session.commit()
-    return jsonify(short_link='http://localhost/' + url_map.short, url=url_map.original), HTTPStatus.CREATED
+    return jsonify(
+        short_link='http://localhost/' + url_map.short,
+        url=url_map.original), HTTPStatus.CREATED
